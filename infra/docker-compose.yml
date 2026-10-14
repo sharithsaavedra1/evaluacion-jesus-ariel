@@ -23,6 +23,48 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    container_name: library_api
+    restart: unless-stopped
+    environment:
+      APP_ENV: local
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-library}
+      DB_USERNAME: ${DB_USERNAME:-library}
+      DB_PASSWORD: ${DB_PASSWORD:-library}
+      DB_SCHEMA: library
+      JWT_SECRET: super_secret_jwt_key_library_3145555_production_safe
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: AdminPassword123!
+      CORS_ORIGIN: "*"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - library_net
+
+  app:
+    build:
+      context: ../app
+      dockerfile: Dockerfile
+    container_name: library_app
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    networks:
+      - library_net
+
 networks:
   library_net:
     name: library_network

@@ -138,6 +138,12 @@ async function runSeeder() {
     { name: 'Felipe Quintero', doc: '1020304010' },
     { name: 'Isabella Montoya', doc: '1020304011' },
     { name: 'Mateo Cárdenas', doc: '1020304012' },
+    { name: 'Lucía Fernández', doc: '1020304013' },
+    { name: 'Andrés Felipe Castro', doc: '1020304014' },
+    { name: 'Valeria Osorio', doc: '1020304015' },
+    { name: 'Esteban Ríos', doc: '1020304016' },
+    { name: 'Gabriela Silva', doc: '1020304017' },
+    { name: 'Samuel Pineda', doc: '1020304018' },
   ];
 
   const createdMembers = [];
@@ -158,26 +164,37 @@ async function runSeeder() {
   }
   console.log(`\n✓ ${createdMembers.length} socios registrados.`);
 
-  // 5. Sembrar ≥ 15 préstamos
-  console.log('\n5. Registrando préstamos de prueba (≥ 15 préstamos)...');
+  // 5. Sembrar ≥ 15 préstamos (incluyendo 3 líneas vencidas según T-21)
+  console.log('\n5. Registrando préstamos de prueba (≥ 15 préstamos, 3 vencidos)...');
   let loansCount = 0;
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 16; i++) {
     const member = createdMembers[i % createdMembers.length];
     const b1 = createdBooks[(i * 2) % createdBooks.length];
-    const b2 = createdBooks[(i * 2 + 1) % createdBooks.length];
 
-    if (!b1 || !b2 || b1.id === b2.id) continue;
+    if (!member || !b1) continue;
+
+    // Primeros 3 préstamos con fecha en el pasado para cumplir T-21 (3 vencidos)
+    const payload = {
+      member_id: member.id,
+      items: [{ book_id: b1.id }],
+    };
+
+    if (i < 3) {
+      payload.loaned_at = '2026-09-20T10:00:00Z'; // Venció el 2026-10-04
+    }
 
     try {
-      await request('/loans', {
+      const lRes = await request('/loans', {
         method: 'POST',
-        body: JSON.stringify({
-          member_id: member.id,
-          items: [{ book_id: b1.id }, { book_id: b2.id }],
-        }),
+        body: JSON.stringify(payload),
       }, token);
       loansCount++;
       process.stdout.write('+');
+
+      // Devolver una línea para probar devolución y reporte
+      if (i === 4 && lRes.items && lRes.items.length > 0) {
+        await request(`/loans/${lRes.id}/items/${lRes.items[0].id}/return`, { method: 'POST' }, token);
+      }
     } catch (e) {
       // Ignorar si el socio alcanzó límite o sin stock
     }
@@ -189,7 +206,7 @@ async function runSeeder() {
   const overdueRes = await request('/loans/overdue', {}, token);
   console.log(`✓ Consulta /loans/overdue respondió correctamente (${overdueRes.items?.length || 0} ítems vencidos).`);
 
-  const reportRes = await request('/reports/most-borrowed?from=2026-10-01&to=2026-10-31', {}, token);
+  const reportRes = await request('/reports/most-borrowed?from=2026-09-01&to=2026-10-31', {}, token);
   console.log(`✓ Reporte /reports/most-borrowed respondió correctamente con ${reportRes.rows?.length || 0} filas agregadas.`);
 
   console.log('\n=== ¡SIEMBRA DE DEMOSTRACIÓN COMPLETADA CON ÉXITO! ===\n');

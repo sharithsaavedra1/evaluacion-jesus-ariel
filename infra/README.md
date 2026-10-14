@@ -24,7 +24,7 @@ Este componente gestiona el aprovisionamiento de infraestructura mediante conten
    docker compose up -d
    ```
 
-3. Verificar que el motor está activo y escuchando en el puerto 5432:
+3. Verificar que el motor está activo y escuchando en el puerto configurado (5434 en host, 5432 interno):
    ```bash
    docker compose ps
    ```

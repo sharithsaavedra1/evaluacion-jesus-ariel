@@ -17,3 +17,5 @@ api/storage/app/covers/*
 app/dist/
 dist/
 scratch_branch_flow.ps1
+sync-to-forks.ps1
+.forks_temp/

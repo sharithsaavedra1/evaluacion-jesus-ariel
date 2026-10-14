@@ -11,3 +11,6 @@ Thumbs.db
 node_modules/
 vendor/
 .env
+composer.phar
+api/storage/app/covers/*
+!api/storage/app/covers/.gitkeep

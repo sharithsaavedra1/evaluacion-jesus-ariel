@@ -9,7 +9,7 @@ abstract class DatabaseRepository
     protected function table(string $tableName)
     {
         $driver = DB::connection()->getDriverName();
-        $schema = config('database.connections.pgsql.schema', 'library');
+        $schema = env('DB_SCHEMA', 'library');
         $fullTable = ($driver === 'pgsql') ? "{$schema}.{$tableName}" : $tableName;
 
         return DB::table($fullTable);

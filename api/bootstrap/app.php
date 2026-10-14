@@ -46,10 +46,8 @@ if (file_exists($envFile)) {
             [$k, $v] = explode('=', $line, 2);
             $k = trim($k);
             $v = trim($v, " \t\n\r\0\x0B\"'");
-            if (!isset($_ENV[$k])) {
-                $_ENV[$k] = $v;
-                putenv("{$k}={$v}");
-            }
+            $_ENV[$k] = $v;
+            putenv("{$k}={$v}");
         }
     }
 }

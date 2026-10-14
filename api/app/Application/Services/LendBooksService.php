@@ -38,7 +38,7 @@ final class LendBooksService
      * @param array $items array de [ ['book_id' => '...'], ... ]
      * @return array
      */
-    public function execute(string $memberId, string $userId, array $items): array
+    public function execute(string $memberId, string $userId, array $items, ?string $customLoanedAt = null): array
     {
         // CA-06.1: de 1 a 3 líneas
         $count = count($items);
@@ -84,7 +84,7 @@ final class LendBooksService
             $books[$bId] = $book;
         }
 
-        $now = Carbon::now('UTC');
+        $now = $customLoanedAt ? Carbon::parse($customLoanedAt) : Carbon::now('UTC');
         $dueAt = (clone $now)->addDays(14); // CA-06.6: loaned_at + 14 días
         $loanId = (string)Str::uuid();
 

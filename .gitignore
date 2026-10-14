@@ -1,0 +1,13 @@
+# Ignore reference clones
+referencia/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.tmp
+node_modules/
+vendor/
+.env

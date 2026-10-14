@@ -16,3 +16,4 @@ api/storage/app/covers/*
 !api/storage/app/covers/.gitkeep
 app/dist/
 dist/
+scratch_branch_flow.ps1

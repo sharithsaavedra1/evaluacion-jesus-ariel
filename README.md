@@ -16,8 +16,10 @@ Se implementó el flujo formal de despliegue y promoción por ambientes solicita
 |---|---|---|
 | `main` | **Producción** (estable, entrega oficial de la evaluación) | Activa y desplegable |
 | `qa` | **Pruebas y Calidad** (validación de integración y RNF) | Activa y sincronizada |
-| `develop` | **Desarrollo Base** (integración continua de ramas feature) | Activa y sincronizada |
-| `feature/*` | **Ramas de Característica** (desarrollo atómico y Pull Requests) | `docs/spec-and-technical-debt`, `feature/infra-docker-setup`, `feature/api-laravel-backend`, `feature/app-react-frontend`, `feature/page-static-presentation`, `feature/tool-demo-seeder` |
+| `develop` | **Desarrollo Base** (integración continua de historias) | Activa y sincronizada |
+| `hu-01-dev` … `hu-10-dev` | **Ramas de Historia en Desarrollo** (promovidas mediante PR a `develop`) | Historial trazable por HU |
+| `hu-01-qa` … `hu-10-qa` | **Ramas de Historia en QA** (promovidas mediante PR a `qa`) | Historial trazable por HU |
+| `hu-01-main` … `hu-10-main` | **Ramas de Historia en Producción** (promovidas mediante PR a `main`) | Historial trazable por HU |
 
 ---
 
@@ -58,7 +60,7 @@ docker compose up -d
 ```
 - API REST: `http://localhost:8000/api/v1`
 - Frontend React: `http://localhost:5173`
-- PostgreSQL 16: `localhost:5432`
+- PostgreSQL 16: `localhost:5434` (mapeado para evitar conflicto con servicios locales en 5432)
 
 ### Opción B: Ejecución Local
 1. **Backend (Laravel):**

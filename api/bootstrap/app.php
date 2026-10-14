@@ -69,12 +69,18 @@ $dbPassword = env('DB_PASSWORD', 'library');
 $dbSchema = env('DB_SCHEMA', 'library');
 
 if ($dbConnection === 'sqlite') {
+    if (!file_exists($dbDatabase)) {
+        $dir = dirname($dbDatabase);
+        if (!is_dir($dir)) @mkdir($dir, 0755, true);
+        @touch($dbDatabase);
+    }
     $capsule->addConnection([
         'driver' => 'sqlite',
         'database' => $dbDatabase,
         'prefix' => '',
     ]);
-} else {
+}
+ else {
     $capsule->addConnection([
         'driver' => 'pgsql',
         'host' => $dbHost,
@@ -92,6 +98,9 @@ if ($dbConnection === 'sqlite') {
 $capsule->setEventDispatcher(new Dispatcher($container));
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+$container->instance('db', $capsule->getDatabaseManager());
+\Illuminate\Support\Facades\Facade::setFacadeApplication($container);
 
 // 4. Artículo III: Vinculación única de Puertos con Adaptadores
 $jwtSecret = env('JWT_SECRET', 'library_default_secret_jwt_key_3145555');

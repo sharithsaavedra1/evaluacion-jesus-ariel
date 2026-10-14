@@ -108,7 +108,7 @@ final class BookRepository extends DatabaseRepository implements BookRepositoryI
     public function decrementCopiesAtomically(string $bookId): bool
     {
         $driver = DB::connection()->getDriverName();
-        $schema = config('database.connections.pgsql.schema', 'library');
+        $schema = env('DB_SCHEMA', 'library');
         $fullTable = ($driver === 'pgsql') ? "{$schema}.book" : 'book';
 
         $affected = DB::update(

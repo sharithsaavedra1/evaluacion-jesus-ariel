@@ -14,3 +14,5 @@ vendor/
 composer.phar
 api/storage/app/covers/*
 !api/storage/app/covers/.gitkeep
+app/dist/
+dist/

@@ -1,5 +1,12 @@
 <?php
 
+if (php_sapi_name() === 'cli-server') {
+    $urlPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    if ($urlPath !== '/' && file_exists(__DIR__ . $urlPath)) {
+        return false;
+    }
+}
+
 $bootstrap = require __DIR__ . '/../bootstrap/app.php';
 
 use App\Adapters\Inbound\Http\Response\ErrorResponse;
@@ -19,6 +26,16 @@ $authMiddleware = $bootstrap['authMiddleware'];
 require __DIR__ . '/../routes/api.php';
 
 $request = Request::capture();
+$contentType = $request->header('Content-Type', '');
+if (str_contains($contentType, 'json') || $request->isJson()) {
+    $decoded = json_decode($request->getContent(), true);
+    if (is_array($decoded)) {
+        $request->request->replace($decoded);
+    }
+}
+
+$container->instance('request', $request);
+$container->instance(Request::class, $request);
 
 // Manejo de petición a través de CORS y Enrutamiento
 $response = $corsMiddleware->handle($request, function ($req) use ($router, $authMiddleware) {

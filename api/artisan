@@ -43,7 +43,11 @@ switch ($command) {
             $userRepo->save($adminUser);
             echo "Admin user [{$normalized}] seeded successfully with credentials from environment!\n";
         } else {
-            echo "Admin user [{$normalized}] already exists.\n";
+            \Illuminate\Support\Facades\DB::statement(
+                'UPDATE library.user SET password_hash = ? WHERE username = ?',
+                [$hasher->hash($adminPassword), $normalized]
+            );
+            echo "Admin user [{$normalized}] password updated successfully from environment!\n";
         }
         break;
 
@@ -51,7 +55,7 @@ switch ($command) {
         $host = env('APP_HOST', '127.0.0.1');
         $port = env('APP_PORT', '8000');
         echo "Manager Library API running on http://{$host}:{$port}\n";
-        passthru("\"" . PHP_BINARY . "\" -S {$host}:{$port} -t \"" . __DIR__ . "/public\"");
+        passthru("\"" . PHP_BINARY . "\" -S {$host}:{$port} -t \"" . __DIR__ . "/public\" \"" . __DIR__ . "/public/index.php\"");
         break;
 
     default:

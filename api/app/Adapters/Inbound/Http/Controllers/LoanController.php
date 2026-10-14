@@ -37,9 +37,10 @@ final class LoanController
 
         $memberId = (string)$request->input('member_id', '');
         $items = (array)$request->input('items', []);
+        $loanedAt = $request->input('loaned_at');
 
         try {
-            $loan = $this->lendBooksService->execute($memberId, $userId, $items);
+            $loan = $this->lendBooksService->execute($memberId, $userId, $items, $loanedAt);
             return new JsonResponse($loan, 201);
         } catch (DomainException $e) {
             return ErrorResponse::create($e->getErrorCode(), $e->getMessage(), $e->getStatusCode(), $e->getDetails());
